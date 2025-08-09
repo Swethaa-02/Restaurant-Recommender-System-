@@ -50,9 +50,7 @@ restaurant-recommendation/
 ---
 
 ## 📌  Work Flow
-# ================================
-# 1️⃣ Import Libraries
-# ================================
+ 1️⃣ Import Libraries
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -64,40 +62,32 @@ from sklearn.metrics import mean_squared_error
 import warnings
 warnings.filterwarnings('ignore')
 
-# ================================
-# 2️⃣ Load Dataset
-# ================================
+ 2️⃣ Load Dataset
 df = pd.read_csv("Dataset.csv")
 
-# ================================
-# 3️⃣ Data Preprocessing
-# ================================
-# Handle missing values
+ 3️⃣ Data Preprocessing
+Handle missing values
 df.fillna({'Cuisines': '', 'City': 'Unknown'}, inplace=True)
 df.fillna(df.mean(numeric_only=True), inplace=True)
 
-# Encode categorical columns
+Encode categorical columns
 label_encoders = {}
 for col in ['City', 'Has Table booking', 'Has Online delivery']:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col].astype(str))
     label_encoders[col] = le
 
-# ================================
-# 4️⃣ Feature Extraction for Recommendation
-# ================================
-# TF-IDF for cuisines
+ 4️⃣ Feature Extraction for Recommendation
+TF-IDF for cuisines
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['Cuisines'])
 
-# Combine features (cost, city, online delivery, etc.)
+Combine features (cost, city, online delivery, etc.)
 numerical_features = df[['Average Cost for two', 'City', 'Has Table booking', 'Has Online delivery']].values
 from scipy.sparse import hstack
 combined_features = hstack([tfidf_matrix, numerical_features])
 
-# ================================
-# 5️⃣ Content-Based Recommendation Function
-# ================================
+5️⃣ Content-Based Recommendation Function
 def recommend_restaurants(cuisine_pref, budget, top_n=5):
     user_tfidf = tfidf.transform([cuisine_pref])
     user_features = hstack([user_tfidf, np.array([[budget, 0, 0, 0]])])
@@ -105,9 +95,7 @@ def recommend_restaurants(cuisine_pref, budget, top_n=5):
     indices = similarity_scores.argsort()[-top_n:][::-1]
     return df.iloc[indices][['Restaurant Name', 'Cuisines', 'Average Cost for two', 'Aggregate rating']]
 
-# ================================
-# 6️⃣ Prediction Model (Example: Predict Aggregate Rating)
-# ================================
+6️⃣ Prediction Model (Example: Predict Aggregate Rating)
 X = df[['Average Cost for two', 'City', 'Has Table booking', 'Has Online delivery']]
 y = df['Aggregate rating']
 
@@ -117,15 +105,11 @@ model = LinearRegression()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
-# ================================
-# 7️⃣ Evaluation
-# ================================
+ 7️⃣ Evaluation
 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 print(f"RMSE: {rmse:.2f}")
 
-# ================================
-# 8️⃣ Actual vs Predicted Table
-# ================================
+ 8️⃣ Actual vs Predicted Table
 results_df = pd.DataFrame({
     'Restaurant Name': df.iloc[y_test.index]['Restaurant Name'].values,
     'Actual Rating': y_test.values,
@@ -134,12 +118,10 @@ results_df = pd.DataFrame({
 results_df['Predicted Rating'] = results_df['Predicted Rating'].round(1)
 print(results_df.head())
 
-# Save table for README
+ Save table for README
 results_df.head(5).to_csv('actual_vs_predicted.csv', index=False)
 
-# ================================
-# 9️⃣ Test Recommendation
-# ================================
+ 9️⃣ Test Recommendation
 print("\nSample Recommendations for 'Japanese', Budget = 500:")
 print(recommend_restaurants("Japanese", 500))
 
