@@ -1,7 +1,6 @@
-# Restaurant-Recommender-System
----
-# 🍽️ Restaurant Recommendation System
 
+# 🍽️ Restaurant Recommendation System
+---
 ## 📌 Overview
 This project is a **Content-Based Restaurant Recommendation System** built with Python and Jupyter Notebooks.  
 It suggests restaurants to users based on their **cuisine preferences**, **budget range**, and other features.
